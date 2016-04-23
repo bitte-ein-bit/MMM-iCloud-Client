@@ -1,0 +1,25 @@
+{
+  "name": "Magic-Mirror-Module-CardDAV-Client",
+  "version": "2.0.0",
+  "description": "A CardDAV Client module for the Magic Mirror.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitte-ein-bit/MMM-CardDAV-Client"
+  },
+  "keywords": [
+    "magic mirror",
+    "smart mirror",
+    "CardDav-Client",
+    "module"
+  ],
+  "author": "Jonathan Vogt",
+  "contributors": "https://github.com/bitte-ein-bit/MMM-CardDAV-Client/graphs/contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bitte-ein-bit/MMM-CardDAV-Client/issues"
+  },
+  "homepage": "https://github.com/bitte-ein-bit/MMM-CardDAV-Client#readme",
+  "dependencies": {
+    "dav": "latest"
+    }
+}
