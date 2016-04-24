@@ -20,6 +20,19 @@ Module.register("MMM-iCloud-Client",{
 		//Open Socket connection
 		this.sendSocketNotification("CONFIG", this.config);
 		Log.info("Starting module: " + this.name);
-	}
+	},
+
+	notificationReceived: function(notification, payload, sender) {
+		if (notification === "PHONE_LOOKUP") {
+			this.sendSocketNotification("PHONE_LOOKUP", payload);
+		}
+	},
+
+	socketNotificationReceived: function(notification, payload) {
+		Log.log(this.name + " received a socket notification: " + notification + " - Payload: " + payload);
+		if (notification === "PHONE_LOOKUP_RESULT") {
+			this.sendNotification("PHONE_LOOKUP_RESULT", payload);
+		}
+	},
 
 });

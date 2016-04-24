@@ -153,5 +153,33 @@ module.exports = NodeHelper.create({
 				});
 			};
 		};
+		if (notification === "PHONE_LOOKUP") {
+			phonenumberDB.find({number: sanatizePhoneNumber(payload)}).limit(1).exec(function(err, docs) {
+				console.log(docs);
+				docs.forEach(function(contact) {
+					var name = "";
+					if (contact.firstName != undefined) {
+						name = contact.firstName;
+					}
+					if (contact.middleName != undefined) {
+						name += " " + contact.middleName;
+					}
+					if (contact.lastName != undefined) {
+						name += " " + contact.lastName;
+					}
+					if (contact.nickName != undefined) {
+						name = contact.nickName + " (" + name + ")";
+					}
+					info = {
+						name: name,
+						label: contact.label,
+						number: contact.number,
+						request: payload,
+					};
+					this.sendNotification('PHONE_LOOKUP_RESULT', info);
+
+				});
+			});
+		}
 	}
 });
