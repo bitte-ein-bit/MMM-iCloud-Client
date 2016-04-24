@@ -19,6 +19,7 @@ The entry in the `module array` in your `config.js` can look like the following.
 	config: {
 		username: "appleID",
 		password: "password",
+		countrycode: "49",
 	}
 },
 ```
