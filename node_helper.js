@@ -1,3 +1,9 @@
+/* Magic Mirror
+* Module: MMM-iCloud-Client
+*
+* By Jonathan Vogt https://github.com/bitte-ein-bit
+* MIT Licensed.
+*/
 "use strict";
 const NodeHelper = require("node_helper");
 const icloud = require("icloud");
@@ -11,7 +17,7 @@ phonenumberDB.ensureIndex({fieldName: "unique", unique: true}, function(err) {})
 var birthdayDB = new Datastore({timestampData: true});
 birthdayDB.ensureIndex({fieldName: "createdAt", expireAfterSeconds: 3600}, function(err) {});
 birthdayDB.ensureIndex({fieldName: "unique", unique: true}, function(err) {console.log(err);});
-var contactDB = new Datastore({filename: "contacts.db", autoload: true, timestampData: true});
+var contactDB = new Datastore({filename: __dirname + "/contacts.db", autoload: true, timestampData: true});
 contactDB.ensureIndex({fieldName: "createdAt", expireAfterSeconds: 3600}, function(err) {});
 
 function sanatizePhoneNumber(number, countrycode) {

@@ -1,27 +1,35 @@
-# MMM-CardDav-Client
-This an extension for the [MagicMirror](https://github.com/MichMich/MagicMirror). It provides a cardDAV Client which will show the upcomming birthdays. It also provides an Addressbook for [MMM-FRITZ-Box-Callmonitor](https://github.com/paviro/MMM-FRITZ-Box-Callmonitor).
+# MMM-iCloud-Client
+This an extension for the [MagicMirror](https://github.com/MichMich/MagicMirror). It provides a iCloud Client which will show upcomming birthdays using the iCloud Addressbook. It also provides an Addressbook for [MMM-FRITZ-Box-Callmonitor](https://github.com/paviro/MMM-FRITZ-Box-Callmonitor).
 
 ## Installation
 1. Navigate into your MagicMirror's `modules` folder.
-2. Clone repository with `git clone https://github.com/bitte-ein-bit/MMM-CardDAV-Client.git`.
-3. Navigate into MMM-CardDAV-Client.
+2. Clone repository with `git clone https://github.com/bitte-ein-bit/MMM-iCloud-Client.git`.
+3. Navigate into MMM-iCloud-Client.
 4. Execute `npm install` to install the dependencies.
 
 
 ## Usage
-The entry in the `module array` in your `config.js` can look like the following. (NOTE: You only have to add the variables to config if want to change its standard value.)
+The entry in the `module array` in your `config.js` can look like the following.
 
 ```
 {
-	module: 'MMM-CardDav-Client',
+	module: 'MMM-iCloud-Client',
 	config: {
-		title: "Upcoming Birthdays",
-		username: "JohnDoe@icloud.com",
-		password: "SuperSecretPassword",
-		server: "contacts.iclould.com",
+		username: "appleID",
+		password: "password",
 	}
+},
+```
+To use the Birthday calendar add the following to your calendar module config.
+
+```
+{
+	symbol: 'birthday-cake',
+	url: 'http://localhost:8080/MMM-iCloud-Client/birthdays',
 }
 ```
 
 ## Dependencies
-- [dav](https://www.npmjs.com/package/dav) (installed by `npm install`)
+- [ical-generator](https://www.npmjs.com/package/ical-generator) (installed by `npm install`)
+- [icloud](https://www.npmjs.com/package/icloud) (installed by `npm install`)
+- [nedb](https://www.npmjs.com/package/nedb) (installed by `npm install`)
