@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/bitte-ein-bit/MMM-CardDAV-Client#readme",
   "dependencies": {
-    "dav": "latest"
-    }
+    "icloud": "latest",
+    "nedb": "^1.8.0"
+  }
 }

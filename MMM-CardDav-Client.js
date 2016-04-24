@@ -7,14 +7,13 @@
 * MIT Licensed.
 */
 
-Module.register('MMM-CardDAV-Client',{
+Module.register('MMM-CardDav-Client',{
 
 	// Default module config.
 	defaults: {
-		title: "Upcoming Birthdays",
 		username: "",
 		password: "",
-		server: "contacts.iclould.com",
+		countrycode: "49",
 	},
 
 	start: function() {

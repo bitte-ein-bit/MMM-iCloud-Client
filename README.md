@@ -16,7 +16,7 @@ The entry in the `module array` in your `config.js` can look like the following.
 	module: 'MMM-CardDav-Client',
 	config: {
 		title: "Upcoming Birthdays",
-		user: "JohnDoe@icloud.com",
+		username: "JohnDoe@icloud.com",
 		password: "SuperSecretPassword",
 		server: "contacts.iclould.com",
 	}
