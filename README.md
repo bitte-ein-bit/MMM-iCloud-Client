@@ -1,5 +1,7 @@
 # MMM-iCloud-Client
-This an extension for the [MagicMirror](https://github.com/MichMich/MagicMirror). It provides a iCloud Client which will show upcomming birthdays using the iCloud Addressbook. It also provides an Addressbook for [MMM-FRITZ-Box-Callmonitor](https://github.com/paviro/MMM-FRITZ-Box-Callmonitor).
+This an extension for the [MagicMirror](https://github.com/MichMich/MagicMirror). It provides a iCloud client which will show upcomming birthdays using the iCloud addressbook.
+
+Future versions will also provides an addressbook for [MMM-FRITZ-Box-Callmonitor](https://github.com/paviro/MMM-FRITZ-Box-Callmonitor).
 
 ## Installation
 1. Navigate into your MagicMirror's `modules` folder.
@@ -20,7 +22,7 @@ The entry in the `module array` in your `config.js` can look like the following.
 	}
 },
 ```
-To use the Birthday calendar add the following to your calendar module config.
+To use the birthday calendar add the following to your calendar module config.
 
 ```
 {
