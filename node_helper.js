@@ -11,18 +11,17 @@ const ical = require("ical-generator");
 const Datastore = require("nedb");
 
 var instance = icloud();
+
 var phonenumberDB = new Datastore({timestampData: true});
 phonenumberDB.ensureIndex({fieldName: "createdAt", expireAfterSeconds: 3600}, function(err) {});
 phonenumberDB.ensureIndex({fieldName: "unique", unique: true}, function(err) {});
+
 var birthdayDB = new Datastore({timestampData: true});
 birthdayDB.ensureIndex({fieldName: "createdAt", expireAfterSeconds: 3600}, function(err) {});
 birthdayDB.ensureIndex({fieldName: "unique", unique: true}, function(err) {console.log(err);});
+
 var contactDB = new Datastore({filename: __dirname + "/contacts.db", autoload: true, timestampData: true});
 contactDB.ensureIndex({fieldName: "createdAt", expireAfterSeconds: 3600}, function(err) {});
-
-function sanatizePhoneNumber(number, countrycode) {
-	return number.replace(/[^+0-9]+/gi,"").replace(/^00/,"+").replace(/^0/, "+" + countrycode);
-}
 
 module.exports = NodeHelper.create({
 	// Subclass start method.
@@ -35,12 +34,11 @@ module.exports = NodeHelper.create({
 
 	loadDB: function() {
 		console.log("loading Database");
-		var self = this;
 		contactDB.find({"birthday": {$exists: true}}, function(err, docs) {
 			docs.forEach(function(contact) {
-				self.extractBirthday(contact);
-			});
-		});
+				this.extractBirthday(contact);
+			}.bind(this));
+		}.bind(this));
 	},
 	extractBirthday: function(contact) {
 		if (contact.birthday.length == 10) {
@@ -76,13 +74,13 @@ module.exports = NodeHelper.create({
 		}
 	},
 
-	extractPhoneNumber: function(contact, self) {
+	extractPhoneNumber: function(contact) {
 		contact.phones.forEach(function(number) {
-			var sanenumber = sanatizePhoneNumber(number.field, self.config.countrycode);
+			var sanenumber = this.sanatizePhoneNumber(number.field);
 			//console.log(sanenumber + " added for " + contact.firstName);
 			var info = {unique: sanenumber, number: sanenumber, label: number.label, firstName: contact.firstName, middleName: contact.middleName, lastName: contact.lastName};
 			phonenumberDB.insert(info);
-		});
+		}.bind(this));
 	},
 
 	serverBirthdays: function(req, res) {
@@ -118,46 +116,58 @@ module.exports = NodeHelper.create({
 		});
 	},
 
+	loadiCloud: function() {
+		contactDB.find({"phones": {$exists: true}}, function(err, docs) {
+			docs.forEach(function(contact) {
+				this.extractPhoneNumber(contact);
+			}.bind(this));
+		}.bind(this));
+		instance.login(this.config.username, this.config.password, function(err) {
+			if (err) return console.log("login failed");
+			instance.contacts(function(err, results) {
+				if (err) return console.log("failed to fetch contacts");
+				results.contacts.forEach(function(contact) {
+					contactDB.update({"contactId": contact.contactId}, contact, {upsert: true});
+					if (contact.birthday != undefined) {
+						this.extractBirthday(contact);
+					}
+					if (contact.phones != undefined) {
+						this.extractPhoneNumber(contact);
+					}
+				}.bind(this));
+				contactDB.persistence.compactDatafile();
+				contactDB.count({}),function(err, count) {
+					console.log("Loaded " + count + " Contacts");
+				};
+			}.bind(this));
+		}.bind(this));
+	},
+
+	sanatizePhoneNumber: function(number) {
+		return number.replace(/[^+0-9]+/gi,"").replace(/^00/,"+").replace(/^0/, "+" + this.config.countrycode);
+	},
+
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === "CONFIG") {
 			this.config = payload;
 			if (!this.started) {
 				console.log("Received config for " + this.name);
-				var self = this;
 				this.started = true;
-
-				contactDB.find({"phones": {$exists: true}}, function(err, docs) {
-					docs.forEach(function(contact) {
-						self.extractPhoneNumber(contact);
-					});
-				});
-
-				instance.login(this.config.username, this.config.password, function(err) {
-					if (err) return console.log("login failed");
-					instance.contacts(function(err, results) {
-						if (err) return console.log("failed to fetch contacts");
-						results.contacts.forEach(function(contact) {
-							contactDB.update({"contactId": contact.contactId}, contact, {upsert: true});
-							if (contact.birthday != undefined) {
-								self.extractBirthday(contact);
-							}
-							if (contact.phones != undefined) {
-								self.extractPhoneNumber(contact, self);
-							}
-						});
-						contactDB.persistence.compactDatafile();
-						contactDB.count({}),function(err, count) {
-							console.log("Loaded " + count + " Contacts");
-						};
-					});
-				});
+				this.loadiCloud();
+				this.intervalID = setInterval(this.loadiCloud.bind(this), 35000000);
 			};
 		};
 		if (notification === "PHONE_LOOKUP") {
-			phonenumberDB.find({number: sanatizePhoneNumber(payload)}).limit(1).exec(function(err, docs) {
+			console.log("Requested Lookup for " + this.sanatizePhoneNumber(payload.number));
+			phonenumberDB.find({number: this.sanatizePhoneNumber(payload.number)}).limit(1).exec(function(err, docs) {
 				console.log(docs);
+				var name = "Unknown Caller";
+				var label = "";
+				var resolved = false;
 				docs.forEach(function(contact) {
-					var name = "";
+					name = "";
+					resolved = true;
+					label = contact.label;
 					if (contact.firstName != undefined) {
 						name = contact.firstName;
 					}
@@ -170,16 +180,19 @@ module.exports = NodeHelper.create({
 					if (contact.nickName != undefined) {
 						name = contact.nickName + " (" + name + ")";
 					}
-					info = {
-						name: name,
-						label: contact.label,
-						number: contact.number,
-						request: payload,
-					};
-					this.sendNotification('PHONE_LOOKUP_RESULT', info);
-
 				});
-			});
+				// Always send results
+				var info = {
+					name: name,
+					label: label,
+					number: this.sanatizePhoneNumber(payload.number),
+					request: payload.number,
+					original_sender: payload.sender,
+					resolved: resolved,
+				};
+				this.sendSocketNotification("PHONE_LOOKUP_RESULT", info);
+
+			}.bind(this));
 		}
 	}
 });

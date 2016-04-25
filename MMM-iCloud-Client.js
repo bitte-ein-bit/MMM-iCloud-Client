@@ -23,8 +23,13 @@ Module.register("MMM-iCloud-Client",{
 	},
 
 	notificationReceived: function(notification, payload, sender) {
+		if (sender) {
+			Log.log(this.name + " received a module notification: " + notification + " from sender: " + sender.name);
+		} else {
+			Log.log(this.name + " received a system notification: " + notification);
+		}
 		if (notification === "PHONE_LOOKUP") {
-			this.sendSocketNotification("PHONE_LOOKUP", payload);
+			this.sendSocketNotification("PHONE_LOOKUP", {number: payload, sender: sender.name});
 		}
 	},
 
