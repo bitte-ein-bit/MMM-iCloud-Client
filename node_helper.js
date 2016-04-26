@@ -117,6 +117,7 @@ module.exports = NodeHelper.create({
 	},
 
 	loadiCloud: function() {
+		console.log("syncing iCloud");
 		contactDB.find({"phones": {$exists: true}}, function(err, docs) {
 			docs.forEach(function(contact) {
 				this.extractPhoneNumber(contact);
@@ -154,7 +155,7 @@ module.exports = NodeHelper.create({
 				console.log("Received config for " + this.name);
 				this.started = true;
 				this.loadiCloud();
-				this.intervalID = setInterval(this.loadiCloud.bind(this), 35000000);
+				this.intervalID = setInterval(function() {this.loadiCloud()}.bind(this), 3500000);
 			};
 		};
 		if (notification === "PHONE_LOOKUP") {
