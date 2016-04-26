@@ -189,7 +189,8 @@ module.exports = NodeHelper.create({
 					number: this.sanatizePhoneNumber(payload.number),
 					request: payload.number,
 					original_sender: payload.sender,
-					resolved: resolved,
+					reason: payload.reason,
+					resolved: resolved
 				};
 				this.sendSocketNotification("PHONE_LOOKUP_RESULT", info);
 
