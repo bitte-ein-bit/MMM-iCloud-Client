@@ -82,7 +82,7 @@ module.exports = NodeHelper.create({
 			var sanenumber = this.sanatizePhoneNumber(number.field);
 			//console.log(sanenumber + " added for " + contact.firstName);
 			var info = {unique: sanenumber, number: sanenumber, label: number.label, firstName: contact.firstName, middleName: contact.middleName, lastName: contact.lastName};
-			phonenumberDB.insert(info);
+			phonenumberDB.update({"unique": sanenumber}, info, {upsert: true});
 		}.bind(this));
 	},
 
