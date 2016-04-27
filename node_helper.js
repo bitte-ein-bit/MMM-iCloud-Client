@@ -107,12 +107,11 @@ module.exports = NodeHelper.create({
 				}
 				var end = new Date(contact.nextbirthday);
 				end.setHours(23,59,59,0);
-				console.log("\n\n\n" + contact.firstName + " " + contact.lastName + "\n" + contact.birthday + "\n" + contact.nextbirthday + "\n" + end);
 				cal.createEvent({
 					start: contact.nextbirthday,
-					allDay: true,
 					end: end,
-					floating: true,
+					//allDay: true,
+					//floating: true,
 					summary: name + birthday,
 				});
 				//console.log(contact.firstName + " " + contact.lastName + " has birthday in " + contact.diffdays + " days and turns " + contact.age);
