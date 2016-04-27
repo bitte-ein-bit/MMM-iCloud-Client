@@ -43,13 +43,15 @@ module.exports = NodeHelper.create({
 	extractBirthday: function(contact) {
 		if (contact.birthday.length == 10) {
 			var today = new Date();
+			today.setHours(0,0,0,0);
 			var birthday = Date.parse(contact.birthday);
 			if (birthday == NaN) {
 				console.log(contact.firstName + " " + contact.lastName + " has invalid birthday: " + contact.birthday);
 			} else {
 				birthday = new Date(contact.birthday);
+				birthday.setHours(0,0,0,0);
 				var nextbirthday = new Date(contact.birthday);
-
+				nextbirthday.setHours(0,0,0,0);
 				nextbirthday.setFullYear(today.getFullYear());
 				if (today > nextbirthday) {
 					nextbirthday.setFullYear(today.getFullYear() + 1);
@@ -65,8 +67,9 @@ module.exports = NodeHelper.create({
 				var diff = nextbirthday.getTime() - today.getTime();
 				var days = Math.floor(diff / (1000 * 60 * 60 * 24));
 				var age = nextbirthday.getFullYear() - birthday.getFullYear();
-				var info = {unique: "birthday-" + contact.contactId, diffdays: days, age: age, nextbirthday: nextbirthday, firstName: contact.firstName, middleName: contact.middleName, lastName: contact.lastName};
-				birthdayDB.insert(info);
+				var unique = "birthday-" + contact.contactId;
+				var info = {unique: unique, diffdays: days, age: age, nextbirthday: nextbirthday, birthday: birthday, firstName: contact.firstName, middleName: contact.middleName, lastName: contact.lastName};
+				birthdayDB.update({"unique": unique}, info, {upsert: true});
 				//console.log("added bday for: " + contact.firstName + ' ' + contact.lastName + ' ' + contact.birthday);
 			}
 		} else {
@@ -102,10 +105,13 @@ module.exports = NodeHelper.create({
 				if (contact.age > 0) {
 					birthday = " (" + contact.age + ")";
 				}
-
+				var end = new Date(contact.nextbirthday);
+				end.setHours(23,59,59,0);
+				console.log("\n\n\n" + contact.firstName + " " + contact.lastName + "\n" + contact.birthday + "\n" + contact.nextbirthday + "\n" + end);
 				cal.createEvent({
 					start: contact.nextbirthday,
 					allDay: true,
+					end: end,
 					floating: true,
 					summary: name + birthday,
 				});
@@ -155,7 +161,7 @@ module.exports = NodeHelper.create({
 				console.log("Received config for " + this.name);
 				this.started = true;
 				this.loadiCloud();
-				this.intervalID = setInterval(function() {this.loadiCloud()}.bind(this), 3500000);
+				this.intervalID = setInterval(function() {this.loadiCloud();}.bind(this), 3500000);
 			};
 		};
 		if (notification === "PHONE_LOOKUP") {
