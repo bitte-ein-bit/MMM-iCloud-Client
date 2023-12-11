@@ -1,6 +1,6 @@
 /* global Module */
 
-/* Magic Mirror
+/* MagicMirror²
 * Module: MMM-iCloud-Client
 *
 * By Jonathan Vogt https://github.com/bitte-ein-bit

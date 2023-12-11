@@ -1,7 +1,7 @@
 {
   "name": "Magic-Mirror-Module-CardDAV-Client",
   "version": "2.0.0",
-  "description": "A CardDAV Client module for the Magic Mirror.",
+  "description": "A CardDAV Client module for MagicMirror².",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bitte-ein-bit/MMM-CardDAV-Client"
